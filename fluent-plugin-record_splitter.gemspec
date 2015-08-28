@@ -18,5 +18,6 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "fluentd", [">= 0.10.58", "< 2"]
   gem.add_dependency "fluent-mixin-config-placeholders", ">= 0.3.0"
+  gem.add_dependency "fluent-mixin-rewrite-tag-name"
   gem.add_development_dependency "rake", ">= 0.9.2"
 end
