@@ -35,13 +35,6 @@ module Fluent
       if @tag and (@remove_prefix or @add_prefix)
         raise Fluent::ConfigError, "both of tag and remove_prefix/add_prefix must not be specified"
       end
-      if @remove_prefix
-        @removed_prefix_string = @remove_prefix + '.'
-        @removed_length = @removed_prefix_string.length
-      end
-      if @add_prefix
-        @added_prefix_string = @add_prefix + '.'
-      end
     end
 
     def emit(tag, es, chain)
@@ -53,10 +46,12 @@ module Fluent
         else
           common = record.select{|key, value| @keep_keys.include?(key) } 
         end
-        record[@split_key].each{|v|
-          v.merge!(common) unless common.empty?
-          Engine.emit(@tag, time, v.merge(common))
-        }
+        if record.key?(@split_key)
+          record[@split_key].each{|v|
+            v.merge!(common) unless common.empty?
+            Engine.emit(emit_tag, time, v.merge(common))
+          }
+        end
       }
       chain.next
     end
