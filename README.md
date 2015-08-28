@@ -1,4 +1,4 @@
-fluent-pluginrecord_splitter
+fluent-plugin-record_splitter
 =====================
 
 Output split array plugin for fluentd.
