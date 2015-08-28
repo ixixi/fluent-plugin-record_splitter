@@ -24,7 +24,7 @@ If following record is passed:
 {'common':'c', 'general':'g', 'other':'foo', 'target_field':[ {'k1':'v1'}, {'k2':'v2'} ] }
 ```
 
-then you got new record like below:
+then you got new records like below:
 
 ```js
 {'common':'c', 'general':'g', 'k1':'v1'}
@@ -47,7 +47,7 @@ If following record is passed:
 {'common':'c', 'general':'g', 'other':'foo', 'target_field':[ {'k1':'v1'}, {'k2':'v2'} ] }
 ```
 
-then you got new record like below:
+then you got new records like below:
 
 ```js
 {'common':'c', 'other':'foo', 'k1':'v1'}
