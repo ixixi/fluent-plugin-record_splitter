@@ -37,22 +37,23 @@ module Fluent
       end
     end
 
-    def emit(tag, es, chain)
-      emit_tag = tag.dup
+    def emit(tag, input_stream, chain)
+      output_stream = Fluent::MultiEventStream.new
       es.each { |time, record|
         filter_record(emit_tag, time, record)
         if keep_other_key
-          common = record.reject{|key, value| key == @split_key or @remove_keys.include?(key) } 
+          common = record.reject{|key, value| key == @split_key or @remove_keys.include?(key) }
         else
-          common = record.select{|key, value| @keep_keys.include?(key) } 
+          common = record.select{|key, value| @keep_keys.include?(key) }
         end
         if record.key?(@split_key)
           record[@split_key].each{|v|
             v.merge!(common) unless common.empty?
-            Engine.emit(emit_tag, time, v.merge(common))
+            output_stream.add(time, v.merge(common))
           }
         end
       }
+      router.emit_stream(tag.dup, output_stream)
       chain.next
     end
 
