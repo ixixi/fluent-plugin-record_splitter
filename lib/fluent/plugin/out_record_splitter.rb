@@ -42,14 +42,14 @@ module Fluent
       es.each { |time, record|
         filter_record(emit_tag, time, record)
         if keep_other_key
-          common = record.reject{|key, value| key == @split_key or @remove_keys.include?(key) } 
+          common = record.reject{|key, value| key == @split_key or @remove_keys.include?(key) }
         else
-          common = record.select{|key, value| @keep_keys.include?(key) } 
+          common = record.select{|key, value| @keep_keys.include?(key) }
         end
         if record.key?(@split_key)
           record[@split_key].each{|v|
             v.merge!(common) unless common.empty?
-            Engine.emit(emit_tag, time, v.merge(common))
+            router.emit(emit_tag, time, v.merge(common))
           }
         end
       }
