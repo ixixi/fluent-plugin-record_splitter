@@ -3,6 +3,13 @@ fluent-plugin-record_splitter
 
 Output split array plugin for fluentd.
 
+## Dependence
+
+- td-agent v2(fluentd ~> 0.12.0)
+   - fluent-plugin-record_splitter < 0.1.6
+- td-agnet v3(fluentd ~> 0.14.0)
+   - fluent-plugin-record_splitter >= 0.1.6
+
 ## Installation
 
 ```
@@ -13,7 +20,7 @@ gem install fluent-plugin-record_splitter
 
     <match pattern>
       type record_splitter
-      tag foo.splitted
+      tag foo.split
       split_key target_field
       keep_keys ["common","general"]
     </match>
@@ -35,7 +42,7 @@ another configuration
 
     <match pattern>
       type record_splitter
-      tag foo.splitted
+      tag foo.split
       split_key target_field
       keep_other_key true
       remove_keys ["general"]
