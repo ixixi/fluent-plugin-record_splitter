@@ -1,7 +1,7 @@
 require 'fluent/test'
 require 'fluent/test/driver/output'
 require 'test/unit'
-require 'fluent/plugin/out_record_splitterr'
+require 'fluent/plugin/out_record_splitter'
 
 class RecordSplitterOutputTest < Test::Unit::TestCase
   def setup
