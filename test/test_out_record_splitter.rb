@@ -103,4 +103,67 @@ class RecordSplitterOutputTest < Test::Unit::TestCase
        { 'common' => 'c', 'general' => 'g', 'k2' => 'v2' }]
     ], d.events
   end
+
+  def test_tag_nochange
+    d = create_driver %(
+      type record_splitter
+      split_key target_field
+    )
+
+    d.run(default_tag: 'test') do
+      d.feed(event_time, 'target_field' => [{ 'k1' => 'v1' }])
+    end
+
+    d.events.each do |tag, _|
+      assert_equal tag, 'test'
+    end
+  end
+
+  def test_tag_change
+    d = create_driver %(
+      type record_splitter
+      tag test.split
+      split_key target_field
+    )
+
+    d.run(default_tag: 'test') do
+      d.feed(event_time, 'target_field' => [{ 'k1' => 'v1' }])
+    end
+
+    d.events.each do |tag, _|
+      assert_equal tag, 'test.split'
+    end
+  end
+
+  def test_add_tag_suffix
+    d = create_driver %(
+      type record_splitter
+      add_tag_suffix .split
+      split_key target_field
+    )
+
+    d.run(default_tag: 'test') do
+      d.feed(event_time, 'target_field' => [{ 'k1' => 'v1' }])
+    end
+
+    d.events.each do |tag, _|
+      assert_equal tag, 'test.split'
+    end
+  end
+
+  def test_add_tag_prefix
+    d = create_driver %(
+      type record_splitter
+      add_tag_prefix split.
+      split_key target_field
+    )
+
+    d.run(default_tag: 'test') do
+      d.feed(event_time, 'target_field' => [{ 'k1' => 'v1' }])
+    end
+
+    d.events.each do |tag, _|
+      assert_equal tag, 'split.test'
+    end
+  end
 end
