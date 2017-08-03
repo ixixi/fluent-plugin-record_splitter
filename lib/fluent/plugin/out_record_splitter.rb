@@ -1,4 +1,5 @@
 require 'fluent/plugin/output'
+require 'fluent/mixin'
 require 'fluent/mixin/config_placeholders'
 require 'fluent/mixin/rewrite_tag_name'
 
@@ -7,9 +8,7 @@ module Fluent
     class RecordSplitterOutput < Output
       Fluent::Plugin.register_output('record_splitter', self)
 
-      config_param :tag, :string
-      config_param :remove_prefix, :string, default: nil
-      config_param :add_prefix, :string, default: nil
+      config_param :tag, :string, default: nil
       config_param :split_key, :string
       config_param :keep_other_key, :bool, default: false
       config_param :keep_keys, :array, default: []
@@ -17,7 +16,7 @@ module Fluent
 
       include SetTagKeyMixin
       include Fluent::Mixin::ConfigPlaceholders
-      include Fluent::HandleTagNameMixin
+      include HandleTagNameMixin
       include Fluent::Mixin::RewriteTagName
 
       helpers :event_emitter
@@ -37,12 +36,6 @@ module Fluent
         if !@keep_other_key && !@remove_keys.empty?
           raise Fluent::ConfigError, 'Cannot set remove_keys when keep_other_key is false.'
         end
-        if !@tag && !@remove_prefix && !@add_prefix
-          raise Fluent::ConfigError, 'missing both of remove_prefix and add_prefix'
-        end
-        if @tag && (@remove_prefix || @add_prefix)
-          raise Fluent::ConfigError, 'both of tag and remove_prefix/add_prefix must not be specified'
-        end
       end
 
       def process(tag, es)
@@ -52,7 +45,10 @@ module Fluent
           filter_record(emit_tag, time, record)
 
           if @keep_other_key
-            common = record.reject { |key, _value| key == @split_key || @remove_keys.include?(key) }
+            common = record.reject do |key, _value|
+              key == @split_key ||
+                @remove_keys.include?(key)
+            end
           else
             common = record.select { |key, _value| @keep_keys.include?(key) }
           end
